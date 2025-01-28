@@ -66,5 +66,5 @@ RUN echo 'case ":$PATH:" in' >> /root/.ghcup/env && \
 # Source the /root/.ghcup/env file in .bashrc
 RUN echo '[ -f "/root/.ghcup/env" ] && . "/root/.ghcup/env" # ghcup-env' >> /root/.bashrc
 
-# Verify installations and display versions
-RUN ghc --version && cabal --version && stack --version
+# Update cabal
+RUN cabal update
