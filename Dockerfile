@@ -15,14 +15,20 @@ ENV DEBIAN_FRONTEND=noninteractive \
 RUN apt-get update -y && \
     apt-get install -y --no-install-recommends \
     curl \
+    libnuma-dev \
+    zlib1g-dev \
+    libgmp-dev \
+    libgmp10 \
     git \
+    wget \
     lsb-release \
-    gnupg2 \
-    gcc \
-    build-essential \
     software-properties-common \
     gnupg2 \
-    apt-transport-https 
+    apt-transport-https \
+    gcc \
+    autoconf \
+    automake \
+    build-essential
 
 # Download and install GHCup
 RUN curl -fsSL https://downloads.haskell.org/~ghcup/x86_64-linux-ghcup -o /usr/bin/ghcup && \
