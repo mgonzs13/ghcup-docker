@@ -7,9 +7,9 @@ ARG GHC=9.4.8
 ARG CABAL=3.12.1.0
 ARG STACK=3.1.1
 
-# Set environment variables for non-interactive installs and GHCup path
+# Set environment variables for non-interactive installs
 ENV DEBIAN_FRONTEND=noninteractive \
-    PATH="/root/.ghcup/bin:$PATH"
+    PATH="/home/docker/.ghcup/bin:$PATH"
 
 # Install necessary dependencies
 RUN apt-get update -y && \
@@ -28,13 +28,22 @@ RUN apt-get update -y && \
     gcc \
     autoconf \
     automake \
-    build-essential
+    build-essential && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create a new user named 'docker'
+RUN useradd -m -s /bin/bash docker
+
 
 # Download and install GHCup
 RUN curl -fsSL https://downloads.haskell.org/~ghcup/x86_64-linux-ghcup -o /usr/bin/ghcup && \
     chmod +x /usr/bin/ghcup && \
     ghcup config set gpg-setting GPGStrict && \
     gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys 7D1E8AFD1D4A16D71FADA2F2CCC85C0E40C06A8C
+
+# Switch to the new user
+USER docker
+WORKDIR /home/docker
 
 # Install GHC, Cabal, and Stack using GHCup
 RUN ghcup -v install ghc ${GHC} && \
@@ -44,27 +53,15 @@ RUN ghcup -v install ghc ${GHC} && \
     ghcup -v install stack ${STACK} && \
     ghcup -v set stack ${STACK}
 
-# Generate the /root/.ghcup/env file using the ghcup command
-RUN touch /root/.ghcup/env
-
-# Add custom content to /root/.ghcup/env
-RUN echo 'case ":$PATH:" in' >> /root/.ghcup/env && \
-    echo '    *:"/root/.ghcup/bin":*)' >> /root/.ghcup/env && \
-    echo '        ;;' >> /root/.ghcup/env && \
-    echo '    *)' >> /root/.ghcup/env && \
-    echo '        export PATH="/root/.ghcup/bin:$PATH"' >> /root/.ghcup/env && \
-    echo '        ;;' >> /root/.ghcup/env && \
-    echo 'esac' >> /root/.ghcup/env && \
-    echo 'case ":$PATH:" in' >> /root/.ghcup/env && \
-    echo '    *:"$HOME/.cabal/bin":*)' >> /root/.ghcup/env && \
-    echo '        ;;' >> /root/.ghcup/env && \
-    echo '    *)' >> /root/.ghcup/env && \
-    echo '        export PATH="$HOME/.cabal/bin:$PATH"' >> /root/.ghcup/env && \
-    echo '        ;;' >> /root/.ghcup/env && \
-    echo 'esac' >> /root/.ghcup/env
-
-# Source the /root/.ghcup/env file in .bashrc
-RUN echo '[ -f "/root/.ghcup/env" ] && . "/root/.ghcup/env" # ghcup-env' >> /root/.bashrc
+# Ensure environment variables are correctly set
+RUN echo 'export PATH="/home/docker/.ghcup/bin:$PATH"' >> /home/docker/.bashrc && \
+    echo 'export PATH="$HOME/.cabal/bin:$PATH"' >> /home/docker/.bashrc
 
 # Update cabal
-RUN cabal update
+RUN /home/docker/.ghcup/bin/cabal update
+
+# Set working directory
+WORKDIR /home/docker
+
+# Set default command
+CMD ["/bin/bash"]
