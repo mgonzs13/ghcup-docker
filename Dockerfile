@@ -34,7 +34,6 @@ RUN apt-get update -y && \
 # Create a new user named 'docker'
 RUN useradd -m -s /bin/bash docker
 
-
 # Download and install GHCup
 RUN curl -fsSL https://downloads.haskell.org/~ghcup/x86_64-linux-ghcup -o /usr/bin/ghcup && \
     chmod +x /usr/bin/ghcup && \
