@@ -2,7 +2,7 @@
 
 This repository provides a Docker image for [ghcup](https://www.haskell.org/ghcup/), a tool for managing GHC (Glasgow Haskell Compiler), Cabal, and Stack on Ubuntu. The image simplifies setting up a Haskell development environment in a containerized manner.
 
-The image is available on Docker Hub. You can check it out [here](https://hub.docker.com/repository/docker/mgons/ghcup-docker/general).
+The image is available on Docker Hub. You can check it out [here](https://hub.docker.com/repository/docker/mgons/ghcup/general).
 
 ## Features
 
@@ -46,6 +46,12 @@ Once the image is built, you can run it interactively with:
 
 ```bash
 docker run -it --rm ghcup:22
+```
+
+Or you can use the remote image:
+
+```bash
+docker run -it --rm mgons/ghcup:22
 ```
 
 This will start a new container and open a shell session. The container will automatically be removed when you exit.
